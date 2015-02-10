@@ -47,7 +47,7 @@ type Company struct {
 	Name     string      `json:"name,omitempty"`
 	Ticker   string      `json:"ticker,omitempty"`
 	Type     interface{} `json:"type,omitempty"`
-	Industry interface{} `json:"industry,omitempty"`
+	Industry string      `json:"industry,omitempty"`
 }
 
 type RecommendationList struct {
@@ -135,7 +135,7 @@ type Certification struct {
 	Number    string    `json:"number,omitempty"`
 	StartDate Date      `json:"startDate,omitempty"`
 	EndDate   Date      `json:"endDate,omitempty"`
-	Authority Authority `authority,omitempty"`
+	Authority Authority `json:"authority,omitempty"`
 }
 
 type CertificationList struct {
