@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/sessions"
 	"net/http"
 )
@@ -37,4 +38,7 @@ func (h *AuthRedirectHandler) ServeHTTP(rw http.ResponseWriter, req *http.Reques
 			http.StatusSeeOther)
 		return
 	}
+
+	http.Redirect(rw, req,
+		fmt.Sprintf("/?code=%s&state=%s", code, state), http.StatusSeeOther)
 }
