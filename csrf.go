@@ -21,5 +21,6 @@ func newCSRFToken(store sessions.Store, rw http.ResponseWriter, req *http.Reques
 	session, _ := store.Get(req, "csrf-token")
 	token := base64.URLEncoding.EncodeToString(securecookie.GenerateRandomKey(30))
 	session.Values["token"] = token
+	store.Save(req, rw, session)
 	return token
 }
