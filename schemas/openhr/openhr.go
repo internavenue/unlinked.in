@@ -198,7 +198,7 @@ type WorkEligibility struct {
 	Permanent   bool   `json:",omitempty"`
 }
 
-type OpenJRProfile struct {
+type OpenHRProfile struct {
 	CandidateID          string                 `json:",omitempty"`
 	CandidateURI         string                 `json:",omitempty"`
 	GivenName            string                 `json:",omitempty"`
