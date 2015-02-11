@@ -1,5 +1,11 @@
 package openhr
 
+import (
+	"fmt"
+	"github.com/internavenue/unlinked.in/schemas"
+	"strings"
+)
+
 type AccessCredential struct {
 	UserID   string `json:",omitempty"`
 	TypeCode string `json:",omitempty"`
@@ -222,4 +228,55 @@ type OpenHRProfile struct {
 	SpecialCommitment    []SpecialCommitment    `json:",omitempty"`
 	Attachment           []Attachment           `json:",omitempty"`
 	UserArea             map[string]interface{} `json:",omitempty"`
+}
+
+func (p *OpenHRProfile) FromLinkedInSchema(linked *schemas.LinkedInProfile) {
+	// TODO(nvcnvn): handle commented field
+	p.CandidateID = linked.ID
+	p.CandidateURI = linked.PublicProfileUrl
+	p.GivenName = linked.FirstName
+	p.FamilyName = linked.LastName
+	p.FormattedName = linked.FormattedName
+	// p.FormattedName
+	dob := linked.DateOfBirth
+	if dob.Day > 0 {
+		p.DateOfBirth = fmt.Sprintf("%d", dob.Day)
+	}
+	if dob.Month > 0 {
+		p.DateOfBirth = fmt.Sprintf("%d-%s", dob.Month, p.DateOfBirth)
+	}
+	if dob.Year > 0 {
+		p.DateOfBirth = fmt.Sprintf("%d-%s", dob.Year, p.DateOfBirth)
+	}
+	// p.Gender
+	// p.DisabilityIndicator
+	// p.DisabilitySummary
+	p.Address = []Address{Address{AddressLine: linked.MainAddress}}
+	p.Phone = make([]Phone, 0, len(linked.PhoneNumbers.Values))
+	for _, fone := range linked.PhoneNumbers.Values {
+		switch fone.PhoneType {
+		case schemas.PHONETYPE_HOME:
+			p.Phone = append(p.Phone, Phone{Number: fone.PhoneNumber, Label: LABEL_PERSONAL})
+		case schemas.PHONETYPE_MOBILE:
+			p.Phone = append(p.Phone, Phone{Number: fone.PhoneNumber, Label: LABEL_MOBILE})
+		case schemas.PHONETYPE_WORK:
+			p.Phone = append(p.Phone, Phone{Number: fone.PhoneNumber, Label: LABEL_WORK})
+		default:
+			p.Phone = append(p.Phone, Phone{Number: fone.PhoneNumber, Label: LABEL_OTHER})
+		}
+	}
+	p.Email = []Email{Email{Address: linked.EmailAddress}}
+	p.Web = make([]Web, 0, linked.Resources.Total)
+	for _, rs := range linked.Resources.Values {
+		p.Web = append(Web{Address: rs.URL, LabelDescription: rs.Name})
+	}
+
+	p.PersonCompetency = make([]PersonCompetency, 0, linked.Languages.Total+linked.Skills.Total)
+	for _, lang := range linked.Languages.Values {
+		p.PersonCompetency = append(p.PersonCompetency, PersonCompetency{
+			CompetencyID:    lang.ID,
+			CompetencyName:  lang.Language.Name,
+			CompetencyLevel: lang.Proficiency.Name,
+		})
+	}
 }

@@ -370,7 +370,7 @@ type LinkedInProfile struct {
 	Certifications        CertificationList    `json:"certifications,omitempty"`
 	Publications          PublicationList      `json:"publications,omitempty"`
 	Courses               CourseList           `json:"courses,omitempty"`
-	Resources             ResourceList         `json:"resources,omitempty"`
+	Resources             ResourceList         `json:"memberUrlResources,omitempty"`
 	PhoneNumbers          PhoneList            `json:"phoneNumbers,omitempty"`
 	BoundAccountTypes     BoundAccountTypeList `json:"boundAccountTypes,omitempty"`
 	IMAccounts            IMAccountList        `json:"imAccounts,omitempty"`

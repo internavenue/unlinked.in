@@ -63,11 +63,15 @@ func (h *ProfileExportHandler) ServeHTTP(rw http.ResponseWriter, req *http.Reque
 		"phonetic-first-name,phonetic-last-name,formatted-phonetic-name," +
 		"headline,location,industry,summary,specialties,positions,picture-url," +
 		"site-standard-profile-request,public-profile-url,last-modified-timestamp," +
-		"proposal-comments,associations,interests,publications,patents,languages," +
-		"skills,certifications,educations,courses,volunteer,three-current-positions," +
-		"three-past-positions,num-recommenders,recommendations-received,date-of-birth," +
+		"proposal-comments,associations,interests,skills,educations,courses," +
+		"publications:(id,title,publisher:(name),authors:(id,name,person),date,url,summary)," +
+		"patents:(id,title,summary,number,status,office,inventors:(id,name,person),date,url)," +
+		"languages:(id,language:(name),proficiency:(level,name))," +
+		"certifications:(id,name,authority:(name),number,start-date,end-date)," +
+		"main-address,volunteer,three-current-positions,three-past-positions," +
+		"num-recommenders,recommendations-received,date-of-birth," +
 		"member-url-resources,phone-numbers,bound-account-types,im-accounts," +
-		"main-address,twitter-accounts,primary-twitter-account)?format=json"
+		"twitter-accounts,primary-twitter-account)?format=json"
 
 	r, _ := http.NewRequest("GET", "https://api.linkedin.com", nil)
 	r.URL.Opaque = requestURL

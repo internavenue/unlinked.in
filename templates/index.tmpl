@@ -6,6 +6,28 @@
 	<title>UnLinked[dot]In</title>
 </head>
 <body>
-	<a class="btn btn-default" href="https://www.linkedin.com/uas/oauth2/authorization?response_type=code&client_id={{.APIKey}}&scope=r_fullprofile%20r_contactinfo&state={{.CSRFToken}}&redirect_uri={{.SiteURL}}/auth/redirect" target="_blank">Unlinked</a>
-</body>
+       <a id="btn-auth" class="btn btn-primary"
+       href="https://www.linkedin.com/uas/oauth2/authorization?response_type=code&client_id={{.APIKey}}&scope=r_emailaddress%20r_fullprofile%20r_contactinfo&state={{.CSRFToken}}&redirect_uri={{.SiteURL}}/auth/redirect">Unlinked</a>
+       <a id="btn-download" class="btn btn-default" target="_blank">Download</a>
+ </body>
+<script type="text/javascript">
+// to lazy to use proper javscript lib/framework
+function getParameterByName(name) {
+	name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+	var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+	var results = regex.exec(location.search);
+	return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+var code = getParameterByName("code");
+var state = getParameterByName("state");
+if (code.length > 0 && state.length > 0) {
+       document.getElementById('btn-download')
+       .setAttribute("href", "/api/export?code="+code+"&state="+state)
+} else {
+
+};
+</script>
+ </html>
+
 </html>
