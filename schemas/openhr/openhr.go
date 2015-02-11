@@ -3,7 +3,6 @@ package openhr
 import (
 	"fmt"
 	"github.com/internavenue/unlinked.in/schemas"
-	"strings"
 )
 
 type AccessCredential struct {
@@ -204,7 +203,7 @@ type WorkEligibility struct {
 	Permanent   bool   `json:",omitempty"`
 }
 
-type OpenHRProfile struct {
+type OpenHRSchema struct {
 	CandidateID          string                 `json:",omitempty"`
 	CandidateURI         string                 `json:",omitempty"`
 	GivenName            string                 `json:",omitempty"`
@@ -230,53 +229,150 @@ type OpenHRProfile struct {
 	UserArea             map[string]interface{} `json:",omitempty"`
 }
 
-func (p *OpenHRProfile) FromLinkedInSchema(linked *schemas.LinkedInProfile) {
-	// TODO(nvcnvn): handle commented field
+func toStringDate(date schemas.Date) string {
+	var strDate string
+	if date.Day > 0 {
+		strDate = fmt.Sprintf("%d", date.Day)
+	}
+	if date.Month > 0 {
+		strDate = fmt.Sprintf("%d-%s", date.Month, strDate)
+	}
+	if date.Year > 0 {
+		strDate = fmt.Sprintf("%d-%s", date.Year, strDate)
+	}
+
+	return strDate
+}
+
+func FromLinkedInSchema(linked *schemas.LinkedInSchema) *OpenHRSchema {
+	p := &OpenHRSchema{}
+	// TODO(nvcnvn): handle commented field and consider when to use UserArea
 	p.CandidateID = linked.ID
 	p.CandidateURI = linked.PublicProfileUrl
 	p.GivenName = linked.FirstName
 	p.FamilyName = linked.LastName
 	p.FormattedName = linked.FormattedName
 	// p.FormattedName
-	dob := linked.DateOfBirth
-	if dob.Day > 0 {
-		p.DateOfBirth = fmt.Sprintf("%d", dob.Day)
-	}
-	if dob.Month > 0 {
-		p.DateOfBirth = fmt.Sprintf("%d-%s", dob.Month, p.DateOfBirth)
-	}
-	if dob.Year > 0 {
-		p.DateOfBirth = fmt.Sprintf("%d-%s", dob.Year, p.DateOfBirth)
-	}
+	p.DateOfBirth = toStringDate(linked.DateOfBirth)
 	// p.Gender
 	// p.DisabilityIndicator
 	// p.DisabilitySummary
 	p.Address = []Address{Address{AddressLine: linked.MainAddress}}
+
 	p.Phone = make([]Phone, 0, len(linked.PhoneNumbers.Values))
 	for _, fone := range linked.PhoneNumbers.Values {
 		switch fone.PhoneType {
 		case schemas.PHONETYPE_HOME:
-			p.Phone = append(p.Phone, Phone{Number: fone.PhoneNumber, Label: LABEL_PERSONAL})
+			p.Phone = append(p.Phone, Phone{
+				Number: fone.PhoneNumber,
+				Label:  LABEL_PERSONAL,
+			})
 		case schemas.PHONETYPE_MOBILE:
-			p.Phone = append(p.Phone, Phone{Number: fone.PhoneNumber, Label: LABEL_MOBILE})
+			p.Phone = append(p.Phone, Phone{
+				Number: fone.PhoneNumber,
+				Label:  LABEL_MOBILE,
+			})
 		case schemas.PHONETYPE_WORK:
-			p.Phone = append(p.Phone, Phone{Number: fone.PhoneNumber, Label: LABEL_WORK})
+			p.Phone = append(p.Phone, Phone{
+				Number: fone.PhoneNumber,
+				Label:  LABEL_WORK,
+			})
 		default:
-			p.Phone = append(p.Phone, Phone{Number: fone.PhoneNumber, Label: LABEL_OTHER})
+			p.Phone = append(p.Phone, Phone{
+				Number: fone.PhoneNumber,
+				Label:  LABEL_OTHER,
+			})
 		}
 	}
 	p.Email = []Email{Email{Address: linked.EmailAddress}}
+
 	p.Web = make([]Web, 0, linked.Resources.Total)
 	for _, rs := range linked.Resources.Values {
-		p.Web = append(Web{Address: rs.URL, LabelDescription: rs.Name})
+		p.Web = append(p.Web, Web{Address: rs.URL, LabelDescription: rs.Name})
 	}
 
-	p.PersonCompetency = make([]PersonCompetency, 0, linked.Languages.Total+linked.Skills.Total)
+	p.PersonCompetency = make([]PersonCompetency, 0,
+		linked.Languages.Total+linked.Skills.Total)
 	for _, lang := range linked.Languages.Values {
 		p.PersonCompetency = append(p.PersonCompetency, PersonCompetency{
-			CompetencyID:    lang.ID,
+			CompetencyID:    fmt.Sprintf("linkedin-lang#%d", lang.ID),
 			CompetencyName:  lang.Language.Name,
 			CompetencyLevel: lang.Proficiency.Name,
 		})
 	}
+	for _, skill := range linked.Skills.Values {
+		p.PersonCompetency = append(p.PersonCompetency, PersonCompetency{
+			CompetencyID:   fmt.Sprintf("linkedin-skill#%d", skill.ID),
+			CompetencyName: skill.Skill.Name,
+		})
+	}
+
+	p.Education = make([]Education, 0, linked.Educations.Total)
+	for _, edu := range linked.Educations.Values {
+		p.Education = append(p.Education, Education{
+			School: edu.SchoolName,
+			EducationLevel: []EducationLevel{EducationLevel{
+				Name: edu.Degree,
+			}},
+			AttendanceStartDate: toStringDate(edu.StartDate),
+			AttendanceEndDate:   toStringDate(edu.EndDate),
+			MajorProgramName:    []string{edu.FieldOfStudy},
+		})
+	}
+
+	p.PositionHistory = make([]PositionHistory, 0,
+		linked.CurrentPositions.Total+linked.PastPositions.Total)
+	for _, pos := range linked.CurrentPositions.Values {
+		p.PositionHistory = append(p.PositionHistory, PositionHistory{
+			Employer:         pos.Company.Name,
+			PositionTitle:    pos.Title,
+			Description:      pos.Summary,
+			StartDate:        toStringDate(pos.StartDate),
+			EndDate:          toStringDate(pos.EndDate),
+			CurrentIndicator: pos.IsCurrent,
+			Industry:         []Industry{Industry{Name: pos.Company.Industry}},
+		})
+	}
+
+	for _, pos := range linked.PastPositions.Values {
+		p.PositionHistory = append(p.PositionHistory, PositionHistory{
+			Employer:         pos.Company.Name,
+			PositionTitle:    pos.Title,
+			Description:      pos.Summary,
+			StartDate:        toStringDate(pos.StartDate),
+			EndDate:          toStringDate(pos.EndDate),
+			CurrentIndicator: pos.IsCurrent,
+			Industry:         []Industry{Industry{Name: pos.Company.Industry}},
+		})
+	}
+
+	p.Certification = make([]Certification, 0, linked.Certifications.Total)
+	for _, cert := range linked.Certifications.Values {
+		p.Certification = append(p.Certification, Certification{
+			CertificationTypeCode: cert.Number,
+			CertificationName:     cert.Name,
+			IssuingAuthorityName:  cert.Authority.Name,
+			FirstIssuedDate:       toStringDate(cert.StartDate),
+			EndDate:               toStringDate(cert.EndDate),
+		})
+	}
+
+	p.EmploymentReferences = make([]EmploymentReference, 0, linked.Recommendations.Total)
+	for _, ref := range linked.Recommendations.Values {
+		p.EmploymentReferences = append(p.EmploymentReferences, EmploymentReference{
+			Comment:       ref.RecommendationText,
+			FormattedName: ref.Recommender.FirstName + " " + ref.Recommender.LastName,
+			// RefereeTypeCode
+		})
+	}
+
+	p.Attachment = make([]Attachment, 0, linked.Resources.Total)
+	for _, rs := range linked.Resources.Values {
+		p.Attachment = append(p.Attachment, Attachment{
+			URI:      rs.URL,
+			FileName: rs.Name,
+		})
+	}
+
+	return p
 }
