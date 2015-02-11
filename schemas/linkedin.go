@@ -335,7 +335,7 @@ type TwitterAccountList struct {
 	Values []TwitterAccount `json:"values,omitempty"`
 }
 
-type LinkedInProfile struct {
+type LinkedInSchema struct {
 	ID                    string               `json:"id,omitempty"`
 	EmailAddress          string               `json:"emailAddress,omitempty"`
 	MainAddress           string               `json:"mainAddress,omitempty"` // guess
