@@ -5,6 +5,8 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/sessions"
 	"github.com/internavenue/unlinked.in/schemas"
+	"github.com/internavenue/unlinked.in/schemas/openhr"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -44,6 +46,7 @@ func (h *ProfileExportHandler) ServeHTTP(rw http.ResponseWriter, req *http.Reque
 		http.Error(rw, "Internal Error", http.StatusInternalServerError)
 		return
 	}
+	log.Info("accessToken response", resp.Status)
 
 	// we don't care about expires_in
 	token := struct {
@@ -83,9 +86,10 @@ func (h *ProfileExportHandler) ServeHTTP(rw http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	profile := &schemas.LinkedInProfile{}
-	err = json.NewDecoder(resp.Body).Decode(profile)
+	respBody, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
+	profile := &schemas.LinkedInSchema{}
+	err = json.Unmarshal(respBody, profile)
 	if err != nil {
 		log.Println("Decoding data error", err)
 		http.Error(rw, "Internal Error", http.StatusInternalServerError)
@@ -93,7 +97,10 @@ func (h *ProfileExportHandler) ServeHTTP(rw http.ResponseWriter, req *http.Reque
 	}
 
 	switch req.FormValue("format") {
+	case "openhr":
+		b, _ := json.MarshalIndent(openhr.FromLinkedInSchema(profile), "", "    ")
+		rw.Write(b)
 	default:
-		json.NewEncoder(rw).Encode(profile)
+		rw.Write(respBody)
 	}
 }
