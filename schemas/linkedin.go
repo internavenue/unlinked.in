@@ -55,10 +55,17 @@ type RecommendationList struct {
 	Values []Recommendation `json:"values,omitempty"`
 }
 
+type Person struct {
+	ID        string `json:"id,omitempty"`
+	FirstName string `json:"firstName,omitempty"`
+	LastName  string `json:"lastName,omitempty"`
+}
+
 type Recommendation struct {
 	ID                 int    `json:"id,omitempty"`
-	RecommendationText string `json:"recommendation-text,omitempty"`
-	// handle recommendation-type and recommender
+	RecommendationText string `json:"recommendationText,omitempty"`
+	RecommendationType string `json:"recommendationType,omitempty"` // just guess
+	Recommender        Person `json:"recommender,omitempty"`
 }
 
 type SkillList struct {
@@ -143,24 +150,193 @@ type CertificationList struct {
 	Values []Certification `json:"values,omitempty"`
 }
 
+type CountryCode struct {
+	Code string `json:"code,omitempty"`
+}
+
+type Location struct {
+	Name string      `json:"name,omitempty"`
+	Code CountryCode `json:"country,omitempty"`
+}
+
+type Publisher struct {
+	Name string `json:"name,omitempty"`
+}
+
+type AuthorList struct {
+	Total  int      `json:"_total,omitempty"`
+	Values []Author `json:"values,omitempty"`
+}
+
+type Author struct {
+	ID     string `json:"id,omitempty"`
+	Name   string `json:"name,omitempty"`
+	Person Person `json:"person,omitempty"`
+}
+
+type Publication struct {
+	ID        string     `json:"id,omitempty"`
+	Title     string     `json:"title,omitempty"`
+	URL       string     `json:"url,omitempty"`
+	Summary   string     `json:"summary,omitempty"`
+	Date      Date       `json:"date,omitempty"`
+	Publisher Publisher  `json:"publisher,omitempty"`
+	Authors   AuthorList `json:"authors,omitempty"` // I guess this field.
+}
+
+type PublicationList struct {
+	Total  int           `json:"_total,omitempty"`
+	Values []Publication `json:"values,omitempty"`
+}
+
+type Inventor struct {
+	ID     string `json:"id,omitempty"`
+	Name   string `json:"name,omitempty"`
+	Person Person `json:"person,omitempty"`
+}
+
+type InventorList struct {
+	Total  int        `json:"_total,omitempty"`
+	Values []Inventor `json:"values,omitempty"`
+}
+
+type Status struct {
+	ID   string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
+type Office struct {
+	Name string `json:"name,omitempty"`
+}
+
+type Patent struct {
+	ID        string       `json:"id,omitempty"`
+	Title     string       `json:"title,omitempty"`
+	Summary   string       `json:"summary,omitempty"`
+	Number    string       `json:"number,omitempty"`
+	Date      Date         `json:"date,omitempty"`
+	URL       string       `json:"url,omitempty"`
+	Status    Status       `json:"status,omitempty"`
+	Office    Office       `json:"office,omitempty"`
+	Inventors InventorList `json:"inventors,omitempty"`
+}
+
+type PatentList struct {
+	Total  int      `json:"_total,omitempty"`
+	Values []Patent `json:"values,omitempty"`
+}
+
+type Course struct {
+	ID     string `json:"id,omitempty"`
+	Name   string `json:"name,omitempty"`
+	Number string `json:"number,omitempty"`
+}
+
+type CourseList struct {
+	Total  int      `json:"_total,omitempty"`
+	Values []Course `json:"values,omitempty"`
+}
+
+type Resource struct {
+	URL  string `json:"url,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
+type ResourceList struct {
+	Total  int        `json:"_total,omitempty"`
+	Values []Resource `json:"values,omitempty"`
+}
+
+type Phone struct {
+	PhoneType   string `json:"phoneType,omitempty"`
+	PhoneNumber string `json:"phoneNumber,omitempty"`
+}
+
+type PhoneList struct {
+	Total  int     `json:"_total,omitempty"`
+	Values []Phone `json:"values,omitempty"`
+}
+
+type BoundAccount struct {
+	ID                  int    `json:"id,omitempty"`
+	IsPrimary           bool   `json:"isPrimary,omitempty"`
+	AccountType         string `json:"accountType,omitempty"`
+	BindingStatus       string `json:"bindingStatus,omitempty"`
+	ProviderAccountId   string `json:"providerAccountId,omitempty"`
+	ProviderAccountName string `json:"providerAccountName,omitempty"`
+}
+
+type BoundAccountList struct {
+	Total  int            `json:"_total,omitempty"`
+	Values []BoundAccount `json:"values,omitempty"`
+}
+
+// BoundAccountListOfList is the funniest struct
+// ...that really what I get from my profile!
+type BoundAccountListOfList struct {
+	Total  int                `json:"_total,omitempty"`
+	Values []BoundAccountList `json:"values,omitempty"`
+}
+
+type IMAccount struct {
+	IMAccountType string `json:"imAccountType,omitempty"`
+	IMAccountName string `json:"imAccountName,omitempty"`
+}
+
+type IMAccountList struct {
+	Total  int         `json:"_total,omitempty"`
+	Values []IMAccount `json:"values,omitempty"`
+}
+
+type TwitterAccount struct {
+	providerAccountID   string `json:"providerAccountId,omitempty"`
+	providerAccountName string `json:"providerAccountName,omitempty"`
+}
+
+type TwitterAccountList struct {
+	Total  int              `json:"_total,omitempty"`
+	Values []TwitterAccount `json:"values,omitempty"`
+}
+
 type LinkedInProfile struct {
-	ID               string             `json:"id,omitempty"`
-	DateOfBirth      Date               `json:"dateOfBirth,omitempty"`
-	Educations       EducationList      `json:"educations,omitempty"`
-	FirstName        string             `json:"firstName,omitempty"`
-	Headline         string             `json:"headline,omitempty"`
-	Industry         string             `json:"industry,omitempty"`
-	Interests        string             `json:"interests,omitempty"`
-	Languages        LanguageList       `json:"languages,omitempty"`
-	LastName         string             `json:"lastName,omitempty"`
-	NumRecommenders  int                `json:"numRecommenders,omitempty"`
-	PictureUrl       string             `json:"pictureUrl,omitempty"`
-	Positions        PositionList       `json:"positions,omitempty"`
-	Recommendations  RecommendationList `json:"recommendationsReceived,omitempty"`
-	Skills           SkillList          `json:"skills,omitempty"`
-	Summary          string             `json:"summary,omitempty"`
-	CurrentPositions PositionList       `json:"threeCurrentPositions,omitempty"`
-	PastPositions    PositionList       `json:"threePastPositions,omitempty"`
-	Volunteer        Volunteer          `json:"volunteer,omitempty"`
-	Certifications   CertificationList  `json:"certifications,omitempty"`
+	ID                          string                 `json:"id,omitempty"`
+	EmailAddress                string                 `json:"emailAddress,omitempty"`
+	MainAddress                 string                 `json:"mainAddress,omitempty"` // guess
+	FirstName                   string                 `json:"firstName,omitempty"`
+	LastName                    string                 `json:"lastName,omitempty"`
+	MaidenNamestring            string                 `json:"maidenName,omitempty"`
+	FormattedNamestring         string                 `json:"formattedName,omitempty"`
+	PhoneticFirstNamestring     string                 `json:"phoneticFirstName,omitempty"`
+	PhoneticLastNamestring      string                 `json:"phoneticLastName,omitempty"`
+	FormattedPhoneticNamestring string                 `json:"formattedPhoneticName,omitempty"`
+	Headline                    string                 `json:"headline,omitempty"`
+	Specialties                 string                 `json:"specialties,omitempty"`
+	Summary                     string                 `json:"summary,omitempty"`
+	ProposalComments            string                 `json:"proposalComments,omitempty"`
+	Associations                string                 `json:"associations,omitempty"`
+	Industry                    string                 `json:"industry,omitempty"`
+	Interests                   string                 `json:"interests,omitempty"`
+	PublicProfileUrl            string                 `json:"publicProfileUrl,omitempty"`
+	PictureUrl                  string                 `json:"pictureUrl,omitempty"`
+	NumRecommenders             int                    `json:"numRecommenders,omitempty"`
+	LastModifiedTimestamp       int64                  `json:"lastModifiedTimestamp,omitempty"`
+	DateOfBirth                 Date                   `json:"dateOfBirth,omitempty"`
+	Location                    Location               `json:"location,omitempty"`
+	Volunteer                   Volunteer              `json:"volunteer,omitempty"`
+	Recommendations             RecommendationList     `json:"recommendationsReceived,omitempty"`
+	Educations                  EducationList          `json:"educations,omitempty"`
+	Positions                   PositionList           `json:"positions,omitempty"`
+	CurrentPositions            PositionList           `json:"threeCurrentPositions,omitempty"`
+	PastPositions               PositionList           `json:"threePastPositions,omitempty"`
+	Skills                      SkillList              `json:"skills,omitempty"`
+	Languages                   LanguageList           `json:"languages,omitempty"`
+	Certifications              CertificationList      `json:"certifications,omitempty"`
+	Publications                PublicationList        `json:"publications,omitempty"`
+	Courses                     CourseList             `json:"courses,omitempty"`
+	Resources                   ResourceList           `json:"resources,omitempty"`
+	Phones                      PhoneList              `json:"phones,omitempty"`
+	BoundAccountTypes           BoundAccountListOfList `json:"boundAccountTypes,omitempty"`
+	IMAccounts                  IMAccountList          `json:"imAccounts,omitempty"`
+	TwitterAccounts             TwitterAccountList     `json:"twitterAccounts,omitempty"` // they seem really liek to twitt
+	PrimaryTwitterAccount       TwitterAccount         `json:"primaryTwitterAccount,omitempty"`
 }
