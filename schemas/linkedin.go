@@ -200,9 +200,16 @@ type InventorList struct {
 	Values []Inventor `json:"values,omitempty"`
 }
 
+type StatusCode int
+
+const (
+	STATUS_APPLICATION StatusCode = iota
+	STATUS_GRANTED
+)
+
 type Status struct {
-	ID   string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
+	ID   StatusCode `json:"id,omitempty"`
+	Name string     `json:"name,omitempty"`
 }
 
 type Office struct {
@@ -247,9 +254,17 @@ type ResourceList struct {
 	Values []Resource `json:"values,omitempty"`
 }
 
+type PhoneType string
+
+const (
+	PHONETYPE_HOME   PhoneType = "home"
+	PHONETYPE_WORK             = "work"
+	PHONETYPE_MOBILE           = "mobile"
+)
+
 type Phone struct {
-	PhoneType   string `json:"phoneType,omitempty"`
-	PhoneNumber string `json:"phoneNumber,omitempty"`
+	PhoneType   PhoneType `json:"phoneType,omitempty"`
+	PhoneNumber string    `json:"phoneNumber,omitempty"`
 }
 
 type PhoneList struct {
@@ -257,13 +272,19 @@ type PhoneList struct {
 	Values []Phone `json:"values,omitempty"`
 }
 
+type BindingStatus string
+
+const (
+	BINDINGSTATUS_AUTHENTICATED BindingStatus = "authenticated"
+)
+
 type BoundAccount struct {
-	ID                  int    `json:"id,omitempty"`
-	IsPrimary           bool   `json:"isPrimary,omitempty"`
-	AccountType         string `json:"accountType,omitempty"`
-	BindingStatus       string `json:"bindingStatus,omitempty"`
-	ProviderAccountId   string `json:"providerAccountId,omitempty"`
-	ProviderAccountName string `json:"providerAccountName,omitempty"`
+	ID                  int           `json:"id,omitempty"`
+	IsPrimary           bool          `json:"isPrimary,omitempty"`
+	AccountType         string        `json:"accountType,omitempty"`
+	BindingStatus       BindingStatus `json:"bindingStatus,omitempty"`
+	ProviderAccountId   string        `json:"providerAccountId,omitempty"`
+	ProviderAccountName string        `json:"providerAccountName,omitempty"`
 }
 
 type BoundAccountList struct {
@@ -283,9 +304,20 @@ type BoundAccountTypeList struct {
 	Values []BoundAccountType `json:"values,omitempty"`
 }
 
+type IMAccountType string
+
+const (
+	IMACCOUNTTYPE_SKYPE IMAccountType = "skype"
+	IMACCOUNTTYPE_AIM                 = "aim"
+	IMACCOUNTTYPE_GTALK               = "gtalk"
+	IMACCOUNTTYPE_ICQ                 = "icq"
+	IMACCOUNTTYPE_MSN                 = "msn"
+	IMACCOUNTTYPE_YAHOO               = "yahoo"
+)
+
 type IMAccount struct {
-	IMAccountType string `json:"imAccountType,omitempty"`
-	IMAccountName string `json:"imAccountName,omitempty"`
+	IMAccountType IMAccountType `json:"imAccountType,omitempty"`
+	IMAccountName string        `json:"imAccountName,omitempty"`
 }
 
 type IMAccountList struct {
