@@ -58,19 +58,16 @@ func (h *ProfileExportHandler) ServeHTTP(rw http.ResponseWriter, req *http.Reque
 	}
 
 	// get JSON data
-	requestURL := "//api.linkedin.com/v1/people/~:"
-	requestURL += "(id,first-name,last-name,headline,picture-url,industry,summary,specialties,positions:"
-	requestURL += "(id,title,summary,start-date,end-date,is-current,company:"
-	requestURL += "(id,name,type,size,industry,ticker)),educations:"
-	requestURL += "(id,school-name,field-of-study,start-date,end-date,degree,activities,notes),"
-	requestURL += "associations,interests,num-recommenders,date-of-birth,publications:"
-	requestURL += "(id,title,publisher:(name),authors:(id,name),date,url,summary),"
-	requestURL += "patents:(id,title,summary,number,status:(id,name),office:(name),"
-	requestURL += "inventors:(id,name),date,url),languages:(id,language:(name),proficiency:(level,name)),"
-	requestURL += "skills:(id,skill:(name)),certifications:(id,name,authority:"
-	requestURL += "(name),number,start-date,end-date),courses:(id,name,number),"
-	requestURL += "recommendations-received:(id,recommendation-type,recommendation-text,recommender),"
-	requestURL += "honors-awards,three-current-positions,three-past-positions,volunteer)?format=json"
+	requestURL := "//api.linkedin.com/v1/people/~:" +
+		"(email-address,id,first-name,last-name,maiden-name,formatted-name," +
+		"phonetic-first-name,phonetic-last-name,formatted-phonetic-name," +
+		"headline,location,industry,summary,specialties,positions,picture-url," +
+		"site-standard-profile-request,public-profile-url,last-modified-timestamp," +
+		"proposal-comments,associations,interests,publications,patents,languages," +
+		"skills,certifications,educations,courses,volunteer,three-current-positions," +
+		"three-past-positions,num-recommenders,recommendations-received,date-of-birth," +
+		"member-url-resources,phone-numbers,bound-account-types,im-accounts," +
+		"main-address,twitter-accounts,primary-twitter-account)?format=json"
 
 	r, _ := http.NewRequest("GET", "https://api.linkedin.com", nil)
 	r.URL.Opaque = requestURL
