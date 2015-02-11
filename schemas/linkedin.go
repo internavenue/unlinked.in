@@ -271,11 +271,16 @@ type BoundAccountList struct {
 	Values []BoundAccount `json:"values,omitempty"`
 }
 
-// BoundAccountListOfList is the funniest struct
+type BoundAccountType struct {
+	NumAccounts   int              `json:"numAccounts,omitempty"`
+	BoundAccounts BoundAccountList `json:"boundAccounts,omitempty"`
+}
+
+// BoundAccountTypeList is the funniest struct
 // ...that really what I get from my profile!
-type BoundAccountListOfList struct {
+type BoundAccountTypeList struct {
 	Total  int                `json:"_total,omitempty"`
-	Values []BoundAccountList `json:"values,omitempty"`
+	Values []BoundAccountType `json:"values,omitempty"`
 }
 
 type IMAccount struct {
@@ -289,8 +294,8 @@ type IMAccountList struct {
 }
 
 type TwitterAccount struct {
-	providerAccountID   string `json:"providerAccountId,omitempty"`
-	providerAccountName string `json:"providerAccountName,omitempty"`
+	ProviderAccountID   string `json:"providerAccountId,omitempty"`
+	ProviderAccountName string `json:"providerAccountName,omitempty"`
 }
 
 type TwitterAccountList struct {
@@ -299,44 +304,44 @@ type TwitterAccountList struct {
 }
 
 type LinkedInProfile struct {
-	ID                          string                 `json:"id,omitempty"`
-	EmailAddress                string                 `json:"emailAddress,omitempty"`
-	MainAddress                 string                 `json:"mainAddress,omitempty"` // guess
-	FirstName                   string                 `json:"firstName,omitempty"`
-	LastName                    string                 `json:"lastName,omitempty"`
-	MaidenNamestring            string                 `json:"maidenName,omitempty"`
-	FormattedNamestring         string                 `json:"formattedName,omitempty"`
-	PhoneticFirstNamestring     string                 `json:"phoneticFirstName,omitempty"`
-	PhoneticLastNamestring      string                 `json:"phoneticLastName,omitempty"`
-	FormattedPhoneticNamestring string                 `json:"formattedPhoneticName,omitempty"`
-	Headline                    string                 `json:"headline,omitempty"`
-	Specialties                 string                 `json:"specialties,omitempty"`
-	Summary                     string                 `json:"summary,omitempty"`
-	ProposalComments            string                 `json:"proposalComments,omitempty"`
-	Associations                string                 `json:"associations,omitempty"`
-	Industry                    string                 `json:"industry,omitempty"`
-	Interests                   string                 `json:"interests,omitempty"`
-	PublicProfileUrl            string                 `json:"publicProfileUrl,omitempty"`
-	PictureUrl                  string                 `json:"pictureUrl,omitempty"`
-	NumRecommenders             int                    `json:"numRecommenders,omitempty"`
-	LastModifiedTimestamp       int64                  `json:"lastModifiedTimestamp,omitempty"`
-	DateOfBirth                 Date                   `json:"dateOfBirth,omitempty"`
-	Location                    Location               `json:"location,omitempty"`
-	Volunteer                   Volunteer              `json:"volunteer,omitempty"`
-	Recommendations             RecommendationList     `json:"recommendationsReceived,omitempty"`
-	Educations                  EducationList          `json:"educations,omitempty"`
-	Positions                   PositionList           `json:"positions,omitempty"`
-	CurrentPositions            PositionList           `json:"threeCurrentPositions,omitempty"`
-	PastPositions               PositionList           `json:"threePastPositions,omitempty"`
-	Skills                      SkillList              `json:"skills,omitempty"`
-	Languages                   LanguageList           `json:"languages,omitempty"`
-	Certifications              CertificationList      `json:"certifications,omitempty"`
-	Publications                PublicationList        `json:"publications,omitempty"`
-	Courses                     CourseList             `json:"courses,omitempty"`
-	Resources                   ResourceList           `json:"resources,omitempty"`
-	Phones                      PhoneList              `json:"phones,omitempty"`
-	BoundAccountTypes           BoundAccountListOfList `json:"boundAccountTypes,omitempty"`
-	IMAccounts                  IMAccountList          `json:"imAccounts,omitempty"`
-	TwitterAccounts             TwitterAccountList     `json:"twitterAccounts,omitempty"` // they seem really liek to twitt
-	PrimaryTwitterAccount       TwitterAccount         `json:"primaryTwitterAccount,omitempty"`
+	ID                          string               `json:"id,omitempty"`
+	EmailAddress                string               `json:"emailAddress,omitempty"`
+	MainAddress                 string               `json:"mainAddress,omitempty"` // guess
+	FirstName                   string               `json:"firstName,omitempty"`
+	LastName                    string               `json:"lastName,omitempty"`
+	MaidenNamestring            string               `json:"maidenName,omitempty"`
+	FormattedNamestring         string               `json:"formattedName,omitempty"`
+	PhoneticFirstNamestring     string               `json:"phoneticFirstName,omitempty"`
+	PhoneticLastNamestring      string               `json:"phoneticLastName,omitempty"`
+	FormattedPhoneticNamestring string               `json:"formattedPhoneticName,omitempty"`
+	Headline                    string               `json:"headline,omitempty"`
+	Specialties                 string               `json:"specialties,omitempty"`
+	Summary                     string               `json:"summary,omitempty"`
+	ProposalComments            string               `json:"proposalComments,omitempty"`
+	Associations                string               `json:"associations,omitempty"`
+	Industry                    string               `json:"industry,omitempty"`
+	Interests                   string               `json:"interests,omitempty"`
+	PublicProfileUrl            string               `json:"publicProfileUrl,omitempty"`
+	PictureUrl                  string               `json:"pictureUrl,omitempty"`
+	NumRecommenders             int                  `json:"numRecommenders,omitempty"`
+	LastModifiedTimestamp       int64                `json:"lastModifiedTimestamp,omitempty"`
+	DateOfBirth                 Date                 `json:"dateOfBirth,omitempty"`
+	Location                    Location             `json:"location,omitempty"`
+	Volunteer                   Volunteer            `json:"volunteer,omitempty"`
+	Recommendations             RecommendationList   `json:"recommendationsReceived,omitempty"`
+	Educations                  EducationList        `json:"educations,omitempty"`
+	Positions                   PositionList         `json:"positions,omitempty"`
+	CurrentPositions            PositionList         `json:"threeCurrentPositions,omitempty"`
+	PastPositions               PositionList         `json:"threePastPositions,omitempty"`
+	Skills                      SkillList            `json:"skills,omitempty"`
+	Languages                   LanguageList         `json:"languages,omitempty"`
+	Certifications              CertificationList    `json:"certifications,omitempty"`
+	Publications                PublicationList      `json:"publications,omitempty"`
+	Courses                     CourseList           `json:"courses,omitempty"`
+	Resources                   ResourceList         `json:"resources,omitempty"`
+	PhoneNumbers                PhoneList            `json:"phoneNumbers,omitempty"`
+	BoundAccountTypes           BoundAccountTypeList `json:"boundAccountTypes,omitempty"`
+	IMAccounts                  IMAccountList        `json:"imAccounts,omitempty"`
+	TwitterAccounts             TwitterAccountList   `json:"twitterAccounts,omitempty"` // they seem really liek to twitt
+	PrimaryTwitterAccount       TwitterAccount       `json:"primaryTwitterAccount,omitempty"`
 }
