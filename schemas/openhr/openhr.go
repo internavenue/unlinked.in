@@ -230,20 +230,39 @@ type OpenHRSchema struct {
 }
 
 func toStringDate(date schemas.Date) string {
-	var strDate string
-	if date.Day > 0 {
-		strDate = fmt.Sprintf("%d", date.Day)
-	}
-	if date.Month > 0 {
-		strDate = fmt.Sprintf("%d-%s", date.Month, strDate)
-	}
-	if date.Year > 0 {
-		strDate = fmt.Sprintf("%d-%s", date.Year, strDate)
+	if date.Year == 0 {
+		return ""
 	}
 
-	return strDate
+	month := date.Month
+	if 1 < month || month > 12 {
+		month = 1
+	}
+
+	day := date.Day
+	if 1 < day || day > 31 {
+		day = 1
+	}
+
+	return fmt.Sprintf("%d-%02d-%02d", date.Year, month, day)
 }
 
+func getPositionHistory(lpos *schemas.Position) PositionHistory {
+	pos := PositionHistory{
+		Employer:         lpos.Company.Name,
+		PositionTitle:    lpos.Title,
+		Description:      lpos.Summary,
+		StartDate:        toStringDate(lpos.StartDate),
+		EndDate:          toStringDate(lpos.EndDate),
+		CurrentIndicator: lpos.IsCurrent,
+	}
+
+	if len(lpos.Company.Industry) > 0 {
+		pos.Industry = []Industry{Industry{Name: lpos.Company.Industry}}
+	}
+
+	return pos
+}
 func FromLinkedInSchema(linked *schemas.LinkedInSchema) *OpenHRSchema {
 	p := &OpenHRSchema{}
 	// TODO(nvcnvn): handle commented field and consider when to use UserArea
@@ -257,7 +276,9 @@ func FromLinkedInSchema(linked *schemas.LinkedInSchema) *OpenHRSchema {
 	// p.Gender
 	// p.DisabilityIndicator
 	// p.DisabilitySummary
-	p.Address = []Address{Address{AddressLine: linked.MainAddress}}
+	if len(linked.MainAddress) > 0 {
+		p.Address = []Address{Address{AddressLine: linked.MainAddress}}
+	}
 
 	p.Phone = make([]Phone, 0, len(linked.PhoneNumbers.Values))
 	for _, fone := range linked.PhoneNumbers.Values {
@@ -309,7 +330,7 @@ func FromLinkedInSchema(linked *schemas.LinkedInSchema) *OpenHRSchema {
 
 	p.Education = make([]Education, 0, linked.Educations.Total)
 	for _, edu := range linked.Educations.Values {
-		p.Education = append(p.Education, Education{
+		e := Education{
 			School: edu.SchoolName,
 			EducationLevel: []EducationLevel{EducationLevel{
 				Name: edu.Degree,
@@ -317,33 +338,24 @@ func FromLinkedInSchema(linked *schemas.LinkedInSchema) *OpenHRSchema {
 			AttendanceStartDate: toStringDate(edu.StartDate),
 			AttendanceEndDate:   toStringDate(edu.EndDate),
 			MajorProgramName:    []string{edu.FieldOfStudy},
-		})
+		}
+
+		e.UserArea = map[string]interface{}{
+			"Notes":      edu.Notes,
+			"Activities": edu.Activities,
+		}
+
+		p.Education = append(p.Education, e)
 	}
 
 	p.PositionHistory = make([]PositionHistory, 0,
 		linked.CurrentPositions.Total+linked.PastPositions.Total)
-	for _, pos := range linked.CurrentPositions.Values {
-		p.PositionHistory = append(p.PositionHistory, PositionHistory{
-			Employer:         pos.Company.Name,
-			PositionTitle:    pos.Title,
-			Description:      pos.Summary,
-			StartDate:        toStringDate(pos.StartDate),
-			EndDate:          toStringDate(pos.EndDate),
-			CurrentIndicator: pos.IsCurrent,
-			Industry:         []Industry{Industry{Name: pos.Company.Industry}},
-		})
+	for _, lpos := range linked.CurrentPositions.Values {
+		p.PositionHistory = append(p.PositionHistory, getPositionHistory(&lpos))
 	}
 
-	for _, pos := range linked.PastPositions.Values {
-		p.PositionHistory = append(p.PositionHistory, PositionHistory{
-			Employer:         pos.Company.Name,
-			PositionTitle:    pos.Title,
-			Description:      pos.Summary,
-			StartDate:        toStringDate(pos.StartDate),
-			EndDate:          toStringDate(pos.EndDate),
-			CurrentIndicator: pos.IsCurrent,
-			Industry:         []Industry{Industry{Name: pos.Company.Industry}},
-		})
+	for _, lpos := range linked.PastPositions.Values {
+		p.PositionHistory = append(p.PositionHistory, getPositionHistory(&lpos))
 	}
 
 	p.Certification = make([]Certification, 0, linked.Certifications.Total)
@@ -372,6 +384,88 @@ func FromLinkedInSchema(linked *schemas.LinkedInSchema) *OpenHRSchema {
 			URI:      rs.URL,
 			FileName: rs.Name,
 		})
+	}
+
+	p.UserArea = map[string]interface{}{}
+	if len(linked.MaidenName) > 0 {
+		p.UserArea["MaidenName"] = linked.MaidenName
+	}
+
+	if len(linked.PhoneticFirstName) > 0 {
+		p.UserArea["PhoneticFirstName"] = linked.PhoneticFirstName
+	}
+
+	if len(linked.PhoneticLastName) > 0 {
+		p.UserArea["PhoneticLastName"] = linked.PhoneticLastName
+	}
+
+	if len(linked.FormattedPhoneticName) > 0 {
+		p.UserArea["FormattedPhoneticName"] = linked.FormattedPhoneticName
+	}
+
+	if len(linked.Headline) > 0 {
+		p.UserArea["Headline"] = linked.Headline
+	}
+
+	if len(linked.Specialties) > 0 {
+		p.UserArea["Specialties"] = linked.Specialties
+	}
+
+	if len(linked.Summary) > 0 {
+		p.UserArea["Summary"] = linked.Summary
+	}
+
+	if len(linked.ProposalComments) > 0 {
+		p.UserArea["ProposalComments"] = linked.ProposalComments
+	}
+
+	if len(linked.Associations) > 0 {
+		p.UserArea["Associations"] = linked.Associations
+	}
+
+	if len(linked.Industry) > 0 {
+		p.UserArea["Industry"] = linked.Industry
+	}
+
+	if len(linked.Interests) > 0 {
+		p.UserArea["Interests"] = linked.Interests
+	}
+
+	if len(linked.PictureUrl) > 0 {
+		p.UserArea["PictureUrl"] = linked.PictureUrl
+	}
+
+	if len(linked.Location.Name) > 0 {
+		p.UserArea["Location"] = linked.Location
+	}
+
+	if linked.Volunteer.Causes.Total > 0 ||
+		linked.Volunteer.VolunteerExperiences.Total > 0 {
+		p.UserArea["Volunteer"] = linked.Volunteer
+	}
+
+	if linked.Publications.Total > 0 {
+		p.UserArea["Publications"] = linked.Publications
+	}
+
+	if linked.Courses.Total > 0 {
+		p.UserArea["Courses"] = linked.Courses
+	}
+
+	if linked.BoundAccountTypes.Total > 0 {
+		p.UserArea["BoundAccountTypes"] = linked.BoundAccountTypes
+	}
+
+	if linked.IMAccounts.Total > 0 {
+		p.UserArea["IMAccounts"] = linked.BoundAccountTypes
+	}
+
+	if linked.TwitterAccounts.Total > 0 {
+		p.UserArea["TwitterAccounts"] = linked.TwitterAccounts
+	}
+
+	if len(linked.PrimaryTwitterAccount.ProviderAccountID) > 0 {
+		p.UserArea["PrimaryTwitterAccount"] = linked.PrimaryTwitterAccount
 	}
 
 	return p

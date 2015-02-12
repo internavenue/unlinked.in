@@ -43,11 +43,11 @@ type LanguageData struct {
 }
 
 type Company struct {
-	ID       int         `json:"id,omitempty"`
-	Name     string      `json:"name,omitempty"`
-	Ticker   string      `json:"ticker,omitempty"`
-	Type     interface{} `json:"type,omitempty"`
-	Industry string      `json:"industry,omitempty"`
+	ID       int    `json:"id,omitempty"`
+	Name     string `json:"name,omitempty"`
+	Ticker   string `json:"ticker,omitempty"`
+	Type     string `json:"type,omitempty"`
+	Industry string `json:"industry,omitempty"`
 }
 
 type RecommendationList struct {
