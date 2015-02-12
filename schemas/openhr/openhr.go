@@ -386,6 +386,15 @@ func FromLinkedInSchema(linked *schemas.LinkedInSchema) *OpenHRSchema {
 		})
 	}
 
+	p.License = make([]License, 0, linked.Patents.Total)
+	for _, pat := range linked.Patents.Values {
+		p.License = append(p.License, License{
+			LicenseName:     pat.Title,
+			Description:     pat.Summary,
+			FirstIssuedDate: toStringDate(pat.Date),
+		})
+	}
+
 	p.UserArea = map[string]interface{}{}
 	if len(linked.MaidenName) > 0 {
 		p.UserArea["MaidenName"] = linked.MaidenName

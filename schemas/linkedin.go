@@ -369,6 +369,7 @@ type LinkedInSchema struct {
 	Languages             LanguageList         `json:"languages,omitempty"`
 	Certifications        CertificationList    `json:"certifications,omitempty"`
 	Publications          PublicationList      `json:"publications,omitempty"`
+	Patents               PatentList           `json:"patents,omitempty"`
 	Courses               CourseList           `json:"courses,omitempty"`
 	Resources             ResourceList         `json:"memberUrlResources,omitempty"`
 	PhoneNumbers          PhoneList            `json:"phoneNumbers,omitempty"`
