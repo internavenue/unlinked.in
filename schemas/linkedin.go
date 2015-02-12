@@ -335,6 +335,18 @@ type TwitterAccountList struct {
 	Values []TwitterAccount `json:"values,omitempty"`
 }
 
+type Award struct {
+	ID     int    `json:"id,omitempty"`
+	Name   string `json:"name,omitempty"`
+	Date   Date   `json:"date,omitempty"`
+	Issuer string `json:"issuer,omitempty"`
+}
+
+type AwardList struct {
+	Total  int     `json:"_total,omitempty"`
+	Values []Award `json:"values,omitempty"`
+}
+
 type LinkedInSchema struct {
 	ID                    string               `json:"id,omitempty"`
 	EmailAddress          string               `json:"emailAddress,omitempty"`
@@ -357,24 +369,25 @@ type LinkedInSchema struct {
 	PictureUrl            string               `json:"pictureUrl,omitempty"`
 	NumRecommenders       int                  `json:"numRecommenders,omitempty"`
 	LastModifiedTimestamp int64                `json:"lastModifiedTimestamp,omitempty"`
-	DateOfBirth           Date                 `json:"dateOfBirth,omitempty"`
-	Location              Location             `json:"location,omitempty"`
-	Volunteer             Volunteer            `json:"volunteer,omitempty"`
-	Recommendations       RecommendationList   `json:"recommendationsReceived,omitempty"`
-	Educations            EducationList        `json:"educations,omitempty"`
-	Positions             PositionList         `json:"positions,omitempty"`
-	CurrentPositions      PositionList         `json:"threeCurrentPositions,omitempty"`
-	PastPositions         PositionList         `json:"threePastPositions,omitempty"`
-	Skills                SkillList            `json:"skills,omitempty"`
-	Languages             LanguageList         `json:"languages,omitempty"`
-	Certifications        CertificationList    `json:"certifications,omitempty"`
-	Publications          PublicationList      `json:"publications,omitempty"`
-	Patents               PatentList           `json:"patents,omitempty"`
-	Courses               CourseList           `json:"courses,omitempty"`
-	Resources             ResourceList         `json:"memberUrlResources,omitempty"`
-	PhoneNumbers          PhoneList            `json:"phoneNumbers,omitempty"`
-	BoundAccountTypes     BoundAccountTypeList `json:"boundAccountTypes,omitempty"`
-	IMAccounts            IMAccountList        `json:"imAccounts,omitempty"`
-	TwitterAccounts       TwitterAccountList   `json:"twitterAccounts,omitempty"` // they seem really liek to twitt
-	PrimaryTwitterAccount TwitterAccount       `json:"primaryTwitterAccount,omitempty"`
+	DateOfBirth           Date                 `json:"dateOfBirth"`
+	Location              Location             `json:"location"`
+	Volunteer             Volunteer            `json:"volunteer"`
+	Recommendations       RecommendationList   `json:"recommendationsReceived"`
+	Educations            EducationList        `json:"educations"`
+	Positions             PositionList         `json:"positions"`
+	CurrentPositions      PositionList         `json:"threeCurrentPositions"`
+	PastPositions         PositionList         `json:"threePastPositions"`
+	Skills                SkillList            `json:"skills"`
+	Languages             LanguageList         `json:"languages"`
+	Certifications        CertificationList    `json:"certifications"`
+	Publications          PublicationList      `json:"publications"`
+	Patents               PatentList           `json:"patents"`
+	Courses               CourseList           `json:"courses"`
+	Resources             ResourceList         `json:"memberUrlResources"`
+	PhoneNumbers          PhoneList            `json:"phoneNumbers"`
+	BoundAccountTypes     BoundAccountTypeList `json:"boundAccountTypes"`
+	IMAccounts            IMAccountList        `json:"imAccounts"`
+	HonorsAwards          AwardList            `json:"honorsAwards"`
+	TwitterAccounts       TwitterAccountList   `json:"twitterAccounts"` // they seem really liek to twitt
+	PrimaryTwitterAccount TwitterAccount       `json:"primaryTwitterAccount"`
 }
