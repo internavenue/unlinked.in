@@ -277,7 +277,11 @@ func FromLinkedInSchema(linked *schemas.LinkedInSchema) *OpenHRSchema {
 	// p.DisabilityIndicator
 	// p.DisabilitySummary
 	if len(linked.MainAddress) > 0 {
-		p.Address = []Address{Address{AddressLine: linked.MainAddress}}
+		p.Address = []Address{Address{
+			AddressLine: linked.MainAddress,
+			Label:       linked.Location.Name,
+			CountryCode: linked.Location.Country.Code,
+		}}
 	}
 
 	p.Phone = make([]Phone, 0, len(linked.PhoneNumbers.Values))
@@ -306,11 +310,6 @@ func FromLinkedInSchema(linked *schemas.LinkedInSchema) *OpenHRSchema {
 		}
 	}
 	p.Email = []Email{Email{Address: linked.EmailAddress}}
-
-	p.Web = make([]Web, 0, linked.Resources.Total)
-	for _, rs := range linked.Resources.Values {
-		p.Web = append(p.Web, Web{Address: rs.URL, LabelDescription: rs.Name})
-	}
 
 	p.PersonCompetency = make([]PersonCompetency, 0,
 		linked.Languages.Total+linked.Skills.Total)
@@ -348,13 +347,8 @@ func FromLinkedInSchema(linked *schemas.LinkedInSchema) *OpenHRSchema {
 		p.Education = append(p.Education, e)
 	}
 
-	p.PositionHistory = make([]PositionHistory, 0,
-		linked.CurrentPositions.Total+linked.PastPositions.Total)
-	for _, lpos := range linked.CurrentPositions.Values {
-		p.PositionHistory = append(p.PositionHistory, getPositionHistory(&lpos))
-	}
-
-	for _, lpos := range linked.PastPositions.Values {
+	p.PositionHistory = make([]PositionHistory, 0, linked.Positions.Total)
+	for _, lpos := range linked.Positions.Values {
 		p.PositionHistory = append(p.PositionHistory, getPositionHistory(&lpos))
 	}
 

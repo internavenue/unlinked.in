@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/internavenue/unlinked.in/schemas"
+	"github.com/internavenue/unlinked.in/schemas/jsonresume"
 	"github.com/internavenue/unlinked.in/schemas/openhr"
 	"io/ioutil"
 	"net/http"
@@ -78,7 +79,7 @@ func ProfileExportHandler(s *Server,
 		"languages:(id,language:(name),proficiency:(level,name))," +
 		"certifications:(id,name,authority:(name),number,start-date,end-date)," +
 		"main-address,volunteer,three-current-positions,three-past-positions," +
-		"num-recommenders,recommendations-received,date-of-birth," +
+		"num-recommenders,recommendations-received,date-of-birth,honors-awards," +
 		"member-url-resources,phone-numbers,bound-account-types,im-accounts," +
 		"twitter-accounts,primary-twitter-account)?format=json"
 
@@ -107,6 +108,9 @@ func ProfileExportHandler(s *Server,
 	switch req.FormValue("format") {
 	case "openhr":
 		b, _ := json.MarshalIndent(openhr.FromLinkedInSchema(profile), "", "    ")
+		rw.Write(b)
+	case "jsonresume":
+		b, _ := json.MarshalIndent(jsonresume.FromLinkedInSchema(profile), "", "    ")
 		rw.Write(b)
 	default:
 		rw.Write(respBody)

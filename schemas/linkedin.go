@@ -155,8 +155,8 @@ type CountryCode struct {
 }
 
 type Location struct {
-	Name string      `json:"name,omitempty"`
-	Code CountryCode `json:"country,omitempty"`
+	Name    string      `json:"name,omitempty"`
+	Country CountryCode `json:"country,omitempty"`
 }
 
 type Publisher struct {
