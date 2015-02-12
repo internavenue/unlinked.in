@@ -24,20 +24,23 @@ func main() {
 	store := sessions.NewCookieStore([]byte(config.SessionKey))
 
 	r := mux.NewRouter()
-	r.Handle("/auth/redirect", &AuthRedirectHandler{
-		store:  store,
-		config: config,
+	r.Handle("/auth/redirect", &Server{
+		store:   store,
+		config:  config,
+		handler: ResirectHandler,
 	})
 
-	r.Handle("/api/export", &ProfileExportHandler{
-		store:  store,
-		config: config,
+	r.Handle("/api/export", &Server{
+		store:   store,
+		config:  config,
+		handler: ProfileExportHandler,
 	})
 
-	r.Handle("/", &IndexHandler{
+	r.Handle("/", &Server{
 		store:    store,
 		config:   config,
 		template: tmpl,
+		handler:  IndexHandler,
 	})
 
 	log.Info(http.ListenAndServe(config.HTTPAddress, r))

@@ -1,28 +1,23 @@
 package main
 
 import (
-	"github.com/gorilla/sessions"
-	"html/template"
 	"net/http"
 )
 
-type IndexHandler struct {
-	store    sessions.Store
-	config   *Config
-	template *template.Template
-}
-
-func (h *IndexHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	csrfToken, ok := getCSRFToken(h.store, req)
+// IndexHandler executes index template. It generates set new CSRF if need.
+// The function always returns (http.StatusOK, nil)
+func IndexHandler(s *Server, rw http.ResponseWriter, req *http.Request) (int, error) {
+	csrfToken, ok := getCSRFToken(s.store, req)
 	if !ok {
-		csrfToken = newCSRFToken(h.store, rw, req)
+		csrfToken = newCSRFToken(s.store, rw, req)
 	}
 
 	data := struct {
 		CSRFToken string
 		APIKey    string
 		SiteURL   string
-	}{csrfToken, h.config.APIKey, h.config.SiteURL}
+	}{csrfToken, s.config.APIKey, s.config.SiteURL}
 
-	h.template.Execute(rw, &data)
+	s.template.Execute(rw, &data)
+	return http.StatusOK, nil
 }

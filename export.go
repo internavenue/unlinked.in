@@ -2,8 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	log "github.com/Sirupsen/logrus"
-	"github.com/gorilla/sessions"
 	"github.com/internavenue/unlinked.in/schemas"
 	"github.com/internavenue/unlinked.in/schemas/openhr"
 	"io/ioutil"
@@ -12,41 +10,47 @@ import (
 	"strings"
 )
 
-type ProfileExportHandler struct {
-	store  sessions.Store
-	config *Config
-}
-
-func (h *ProfileExportHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+func ProfileExportHandler(s *Server,
+	rw http.ResponseWriter, req *http.Request) (int, error) {
 	code := req.FormValue("code")
 	state := req.FormValue("state")
 	if len(code) == 0 || len(state) == 0 {
-		http.Error(rw, "missing code or state param", http.StatusBadRequest)
-		return
+		return http.StatusBadRequest, &HandlerError{
+			Description: "missing code or state param",
+		}
 	}
 
-	csrfToken, ok := getCSRFToken(h.store, req)
+	csrfToken, ok := getCSRFToken(s.store, req)
 	if !ok || state != csrfToken {
-		http.Error(rw, "state doesnot match CSRF-token", http.StatusForbidden)
-		return
+		return http.StatusForbidden, &HandlerError{
+			Description: "state doesnot match CSRF-token",
+		}
 	}
 
 	// get access token
 	data := url.Values{}
 	data.Set("grant_type", "authorization_code")
-	data.Set("redirect_uri", h.config.SiteURL+"/auth/redirect")
-	data.Set("client_id", h.config.APIKey)
-	data.Set("client_secret", h.config.SecretKey)
+	data.Set("redirect_uri", s.config.SiteURL+"/auth/redirect")
+	data.Set("client_id", s.config.APIKey)
+	data.Set("client_secret", s.config.SecretKey)
 	data.Set("code", code)
 
 	resp, err := http.Post("https://www.linkedin.com/uas/oauth2/accessToken",
 		"application/x-www-form-urlencoded", strings.NewReader(data.Encode()))
 
 	if err != nil {
-		http.Error(rw, "Internal Error", http.StatusInternalServerError)
-		return
+		return http.StatusInternalServerError, &HandlerError{
+			Description: err.Error(),
+			Detail:      "Error when request access token",
+		}
 	}
-	log.Info("accessToken response", resp.Status)
+
+	if resp.StatusCode != http.StatusOK {
+		return http.StatusInternalServerError, &HandlerError{
+			Description: resp.Status,
+			Detail:      "Error response returned when request access token",
+		}
+	}
 
 	// we don't care about expires_in
 	token := struct {
@@ -56,8 +60,10 @@ func (h *ProfileExportHandler) ServeHTTP(rw http.ResponseWriter, req *http.Reque
 	err = json.NewDecoder(resp.Body).Decode(&token)
 	resp.Body.Close()
 	if err != nil {
-		http.Error(rw, "Internal Error", http.StatusInternalServerError)
-		return
+		return http.StatusInternalServerError, &HandlerError{
+			Description: err.Error(),
+			Detail:      "Error when parsing message returned from request access token",
+		}
 	}
 
 	// get JSON data
@@ -81,9 +87,10 @@ func (h *ProfileExportHandler) ServeHTTP(rw http.ResponseWriter, req *http.Reque
 	r.Header.Set("Authorization", "Bearer "+token.AccessToken)
 	resp, err = http.DefaultClient.Do(r)
 	if err != nil {
-		log.Println("Fetching data error", err)
-		http.Error(rw, "Internal Error", http.StatusInternalServerError)
-		return
+		return http.StatusInternalServerError, &HandlerError{
+			Description: err.Error(),
+			Detail:      "Error when request user data",
+		}
 	}
 
 	respBody, err := ioutil.ReadAll(resp.Body)
@@ -91,9 +98,10 @@ func (h *ProfileExportHandler) ServeHTTP(rw http.ResponseWriter, req *http.Reque
 	profile := &schemas.LinkedInSchema{}
 	err = json.Unmarshal(respBody, profile)
 	if err != nil {
-		log.Println("Decoding data error", err)
-		http.Error(rw, "Internal Error", http.StatusInternalServerError)
-		return
+		return http.StatusInternalServerError, &HandlerError{
+			Description: err.Error(),
+			Detail:      "Error when parse data returned from request user data",
+		}
 	}
 
 	switch req.FormValue("format") {
@@ -103,4 +111,6 @@ func (h *ProfileExportHandler) ServeHTTP(rw http.ResponseWriter, req *http.Reque
 	default:
 		rw.Write(respBody)
 	}
+
+	return http.StatusOK, nil
 }
