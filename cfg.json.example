@@ -1,0 +1,8 @@
+{
+   "HTTPAddress":":80",
+   "APIKey":"LinkedIn API key",
+   "SecretKey":"LinkedIn Secret key",
+   "SessionKey":"a secure random string for session secure cookie",
+   "TemplateDir":"./templates",
+   "SiteURL":"http://localhost"
+}
