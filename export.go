@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/internavenue/unlinked.in/schemas"
+	"github.com/internavenue/unlinked.in/schemas/europass"
 	"github.com/internavenue/unlinked.in/schemas/jsonresume"
 	"github.com/internavenue/unlinked.in/schemas/openhr"
 	"io/ioutil"
@@ -107,10 +108,13 @@ func ProfileExportHandler(s *Server,
 
 	switch req.FormValue("format") {
 	case "openhr":
-		b, _ := json.MarshalIndent(openhr.FromLinkedInSchema(profile), "", "    ")
+		b, _ := json.MarshalIndent(openhr.FromLinkedInSchema(profile), "", "  ")
 		rw.Write(b)
 	case "jsonresume":
-		b, _ := json.MarshalIndent(jsonresume.FromLinkedInSchema(profile), "", "    ")
+		b, _ := json.MarshalIndent(jsonresume.FromLinkedInSchema(profile), "", "  ")
+		rw.Write(b)
+	case "europass":
+		b, _ := json.MarshalIndent(europass.FromLinkedInSchema(profile), "", "  ")
 		rw.Write(b)
 	default:
 		rw.Write(respBody)
