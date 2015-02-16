@@ -4,14 +4,59 @@
 	<meta charset="UTF-8">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 	<title>UnLinked[dot]In</title>
+	<style type="text/css">
+	html, body {
+	    height: 100%;
+	    background-color: #0084B4;
+	}
+	</style>
 </head>
 <body>
-       <a id="btn-auth" class="btn btn-primary"
-       href="https://www.linkedin.com/uas/oauth2/authorization?response_type=code&client_id={{.APIKey}}&scope=r_emailaddress%20r_fullprofile%20r_contactinfo&state={{.CSRFToken}}&redirect_uri={{.SiteURL}}/auth/redirect">Unlinked</a>
-       <a id="btn-download" class="btn btn-default" target="_blank" onclick="downloaded()">Download</a>
+	<div class="container" style="height: 100%; background-color: white; position: relative;">
+		<div class="row">
+			<div class="col-md-4 col-md-offset-4 text-center">
+				<a href="{{.SiteURL}}"><h1>UnLinked[dot]In</h1></a>
+			</div>
+			<div class="col-md-4 col-md-offset-4">
+				<br>
+				<div class="input-group">
+					<a id="btn-auth" class="btn btn-primary btn-lg"
+					href="https://www.linkedin.com/uas/oauth2/authorization?response_type=code&client_id={{.APIKey}}&scope=r_emailaddress%20r_fullprofile%20r_contactinfo&state={{.CSRFToken}}&redirect_uri={{.SiteURL}}/auth/redirect">
+						Unlinked
+					</a>
+				</div>
+			</div>
+			<div class="col-md-4 col-md-offset-4">
+				<br>
+				<div id="group-download" class="input-group">
+					<select id="slt-format" class="form-control" onchange="updateDownloadLink();">
+						<option value="openhr">Open-HR</option>
+						<option value="jsonresume">JSON Resume</option>
+						<option value="europass">Europass</option>
+						<option value="linkedin">LinkedIn default</option>
+					</select>
+					<span class="input-group-btn">
+						<a id="btn-download" class="btn btn-default" target="_blank" onclick="downloaded()">Download</a>
+					</span>
+				</div>
+			</div>
+			<div class="col-md-11" style="position: fixed; bottom: 0;">
+				<hr style="box-shadow: 0 0 10px 1px black;">
+				Powered by <a href="https://www.internavenue.com/">InternAvenue.com</a>
+			</div>
+		</div>
+	</div>
  </body>
 <script type="text/javascript">
-// to lazy to use proper javscript lib/framework
+var code = getParameterByName("code");
+var state = getParameterByName("state");
+if (code.length > 0 && state.length > 0) {
+	updateDownloadLink();
+	document.getElementById('group-download').style.visibility = "visible";
+} else {
+	document.getElementById('group-download').style.visibility = "hidden";
+};
+
 function getParameterByName(name) {
 	name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 	var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
@@ -19,20 +64,17 @@ function getParameterByName(name) {
 	return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-function downloaded () {
-	location.search = "";
-	document.getElementById('btn-download').style.visibility = "hidden";
-	document.getElementById('btn-auth').style.visibility = "visible";
+function updateDownloadLink() {
+	var slt = document.getElementById("slt-format");
+	var format = slt.options[slt.selectedIndex].value;
+	document.getElementById('btn-download').setAttribute("href", "/api/export?format="+format+"&code="+code+"&state="+state);
 }
 
-var code = getParameterByName("code");
-var state = getParameterByName("state");
-if (code.length > 0 && state.length > 0) {
-	document.getElementById('btn-download').setAttribute("href", "/api/export?code="+code+"&state="+state)
-	document.getElementById('btn-download').style.visibility = "visible";
-} else {
-	document.getElementById('btn-download').style.visibility = "hidden";
-};
+function downloaded() {
+	location.search = "";
+	document.getElementById('group-download').style.visibility = "hidden";
+	document.getElementById('btn-auth').style.visibility = "visible";
+}
 </script>
  </html>
 
