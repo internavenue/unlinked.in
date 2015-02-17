@@ -67,7 +67,7 @@ function getParameterByName(name) {
 function updateDownloadLink() {
 	var slt = document.getElementById("slt-format");
 	var format = slt.options[slt.selectedIndex].value;
-	document.getElementById('btn-download').setAttribute("href", "/api/export?format="+format+"&code="+code+"&state="+state);
+	document.getElementById('btn-download').setAttribute("href", "/export?format="+format+"&code="+code+"&state="+state);
 }
 
 function downloaded() {

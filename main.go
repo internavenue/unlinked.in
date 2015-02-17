@@ -30,7 +30,7 @@ func main() {
 		handler: ResirectHandler,
 	})
 
-	r.Handle("/api/export", &Server{
+	r.Handle("/export", &Server{
 		store:   store,
 		config:  config,
 		handler: ProfileExportHandler,
