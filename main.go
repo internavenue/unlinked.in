@@ -10,6 +10,7 @@ import (
 func main() {
 	var cfgfile string
 	flag.StringVar(&cfgfile, "cfgfile", "./cfg.json", "path to JSON config file")
+	flag.Parse()
 
 	config, err := server.ReadConfig(cfgfile)
 	if err != nil {
